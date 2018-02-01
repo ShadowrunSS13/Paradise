@@ -1,10 +1,10 @@
 // OKAY I DON'T KNOW WHO THE FUCK ORIGINALLY CODED THIS BUT THEY ARE OFFICIALLY FIRED FOR BEING DRUNK AND STUPID
 // FUCK YOU MYSTERY CODERS
 // FOR THIS SHIT I'M GOING TO MAKE ALL MY COMMENTS IN CAPS
-
+/*
 /atom
 	var/list/canSmoothWith=list() // TYPE PATHS I CAN SMOOTH WITH~~~~~
-
+*/
 // MOVED INTO UTILITY FUNCTION FOR LESS DUPLICATED CODE.
 /atom/proc/findSmoothingNeighbors()
 	// THIS IS A BITMAP BECAUSE NORTH/SOUTH/ETC ARE ALL BITFLAGS BECAUSE BYOND IS DUMB AND
@@ -25,12 +25,14 @@
 /atom/proc/isSmoothableNeighbor(var/atom/A)
 	return is_type_in_list(A,canSmoothWith)
 
-/turf/simulated/wall/isSmoothableNeighbor(var/atom/A)
+/*
+/turf/simulated/wall/perspective/isSmoothableNeighbor(var/atom/A)
 	if(is_type_in_list(A,canSmoothWith))
 		// COLON OPERATORS ARE TERRIBLE BUT I HAVE NO CHOICE
 		if(src.mineral == A:mineral) //mineral not walltype so reinf still smooths with normal and vice versa
 			return 1
 	return 0
+*/
 
 /**
  * WALL SMOOTHING SHIT
@@ -52,7 +54,7 @@
  *
  * WE COULD STANDARDIZE THIS BUT EVERYONE'S A FUCKING SNOWFLAKE
  */
-/turf/simulated/wall/relativewall()
+/turf/simulated/wall/perspective/relativewall()
 	var/junction=findSmoothingNeighbors()
 	icon_state = "[walltype][junction]" // WHY ISN'T THIS IN UPDATE_ICON OR SIMILAR
 
@@ -68,18 +70,17 @@
 				if(isSmoothableNeighbor(A) || sko)
 					A.relativewall()
 
-/turf/simulated/wall/New()
+/turf/simulated/wall/perspective/New()
 	..()
 	relativewall_neighbours()
 
-/turf/simulated/wall/Destroy()
+/turf/simulated/wall/perspective/Destroy()
 	for(var/obj/effect/E in src)
 		if(E.name == "Wallrot")
 			qdel(E)
 
-	if(!del_suppress_resmoothing)
-		spawn(10)
-			relativewall_neighbours(sko=1)
+	spawn(10)
+		relativewall_neighbours(sko=1)
 
 	// JESUS WHY
 	for(var/direction in cardinal)
@@ -97,12 +98,3 @@
 				crystal.pixel_y = 0 */
 	return ..()
 
-// DE-HACK
-/turf/simulated/wall/vault/relativewall()
-	return
-
-
-/obj/structure/alien/resin/relativewall()
-	var/junction = findSmoothingNeighbors()
-	icon_state = "[resintype][junction]"
-	return
